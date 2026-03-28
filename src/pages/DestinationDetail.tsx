@@ -60,12 +60,6 @@ const DestinationDetail = () => {
   const fetchWeather = async (lat: number, lon: number) => {
     setWeatherLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("weather", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        body: undefined,
-      });
-      // Use fetch directly for GET with query params
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/weather?lat=${lat}&lon=${lon}`;
       const resp = await fetch(url, {
         headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
