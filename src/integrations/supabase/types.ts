@@ -14,7 +14,161 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      destinations: {
+        Row: {
+          best_time: string
+          category: string
+          created_at: string
+          description: string
+          highlights: string[] | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          nearby_facilities: string[] | null
+          safety_info: string | null
+        }
+        Insert: {
+          best_time: string
+          category: string
+          created_at?: string
+          description: string
+          highlights?: string[] | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          nearby_facilities?: string[] | null
+          safety_info?: string | null
+        }
+        Update: {
+          best_time?: string
+          category?: string
+          created_at?: string
+          description?: string
+          highlights?: string[] | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          nearby_facilities?: string[] | null
+          safety_info?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          budget_preference: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          traveller_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          budget_preference?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          traveller_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          budget_preference?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          traveller_type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trips: {
+        Row: {
+          budget_tier: string
+          created_at: string
+          destination: string
+          end_date: string
+          group_size: number
+          id: string
+          must_visit: string | null
+          origin: string
+          plan_content: string | null
+          start_date: string
+          status: string
+          traveller_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget_tier: string
+          created_at?: string
+          destination: string
+          end_date: string
+          group_size?: number
+          id?: string
+          must_visit?: string | null
+          origin: string
+          plan_content?: string | null
+          start_date: string
+          status?: string
+          traveller_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget_tier?: string
+          created_at?: string
+          destination?: string
+          end_date?: string
+          group_size?: number
+          id?: string
+          must_visit?: string | null
+          origin?: string
+          plan_content?: string | null
+          start_date?: string
+          status?: string
+          traveller_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          destination_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destination_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destination_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
