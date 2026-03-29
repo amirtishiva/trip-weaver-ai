@@ -31,6 +31,25 @@ async function callAgent(apiKey: string, systemPrompt: string, userPrompt: strin
   return data.choices?.[0]?.message?.content || "";
 }
 
+const TABLE_FORMAT_RULES = `
+STRICT OUTPUT RULES:
+1. Output MUST be in clean pipe-delimited table format (rows and columns), NOT Markdown.
+2. Do NOT use: Markdown syntax, asterisks (*), emojis, bullet points.
+3. Each row represents a day-wise or category-wise breakdown.
+4. Use clear column headers with pipes.
+
+MANDATORY COLUMNS:
+| Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info |
+
+ADDITIONAL RULES:
+- Include realistic timing (morning, afternoon, evening or exact hours).
+- Provide practical cost ranges in INR.
+- Include real, commonly known hotels and restaurants.
+- Emergency contacts must include: Local police, Hospital, Tourist helpline.
+- Keep content concise. Each cell should contain short, precise information.
+- Do NOT use long paragraphs. Every piece of info goes in a table cell.
+`;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -43,7 +62,6 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get user from JWT
     const token = authHeader?.replace("Bearer ", "");
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) {
@@ -54,7 +72,6 @@ serve(async (req) => {
 
     const { origin, destination, startDate, endDate, groupSize, travellerType, budgetTier, mustVisit } = await req.json();
 
-    // Create trip record
     const { data: trip, error: tripError } = await supabase
       .from("trips")
       .insert({
@@ -75,35 +92,35 @@ serve(async (req) => {
     const tripContext = `Origin: ${origin}\nDestination: ${destination}\nDates: ${startDate} to ${endDate}\nGroup Size: ${groupSize}\nTraveller Type: ${travellerType}\nBudget Tier: ${budgetTier}\nMust-Visit Places: ${mustVisit || "None specified"}`;
 
     try {
-      // Agent 1: Travel Logistics Analyst
-      const logisticsOutput = await callAgent(LOVABLE_API_KEY,
-        `You are a Travel Logistics Analyst specializing in Indian domestic travel. Research the most efficient and cost-effective travel and accommodation plans. Provide specific train numbers, bus operators, flight options, and accommodation recommendations for both Frugal and Comfort tiers. Tailor recommendations to the traveller type: ${travellerType}. Format output in clean Markdown.`,
-        `Plan the logistics for this trip:\n${tripContext}\n\nProvide:\n1. Transportation options (trains with numbers, buses, flights) with approximate costs\n2. Accommodation strategy for ${budgetTier} tier\n3. Local transport recommendations at destination`
+      // Agent 1: Discovery Agent
+      const discoveryOutput = await callAgent(LOVABLE_API_KEY,
+        `You are a Travel Discovery Agent specializing in Indian domestic travel. Research transportation options (trains with numbers, buses, flights) and accommodation for the destination.
+${TABLE_FORMAT_RULES}`,
+        `Research logistics for this trip:\n${tripContext}\n\nProvide a table with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info\n\nCover: Transport options from origin to destination, local transport at destination, recommended hotels for ${budgetTier} tier.`
       );
 
-      // Agent 2: Budgeting Specialist
+      // Agent 2: Planning Agent
+      const planningOutput = await callAgent(LOVABLE_API_KEY,
+        `You are a Travel Planning Agent. Create a day-by-day itinerary using the discovery information provided. Tailor to ${travellerType} traveller type.
+${TABLE_FORMAT_RULES}`,
+        `Using discovery data:\n${discoveryOutput}\n\nTrip details:\n${tripContext}\n\n${mustVisit ? `MUST include: ${mustVisit}` : "Create a balanced itinerary."}\n\nCreate a detailed day-by-day table with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info`
+      );
+
+      // Agent 3: Budgeting Agent
       const budgetOutput = await callAgent(LOVABLE_API_KEY,
-        `You are a Travel Budgeting Specialist. Create detailed, itemized budgets for Indian travel. Use the logistics information provided to build accurate cost estimates. Always provide both Frugal and Comfort tier comparisons. Format as Markdown tables.`,
-        `Using this logistics plan:\n${logisticsOutput}\n\nTrip details:\n${tripContext}\n\nCreate:\n1. A detailed Markdown budget table comparing Frugal vs Comfort across: Travel, Accommodation, Food, Activities, Miscellaneous\n2. Per-person cost breakdown for group of ${groupSize}\n3. Money management tips for group trips`
+        `You are a Travel Budgeting Agent. Create itemized budget breakdowns.
+${TABLE_FORMAT_RULES}`,
+        `Using planning data:\n${planningOutput}\n\nTrip details:\n${tripContext}\n\nCreate budget tables with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info\n\nInclude rows for: Travel costs, Accommodation per night, Food per day, Activities, Miscellaneous. Show per-person costs for group of ${groupSize}.`
       );
 
-      // Agent 3: Local Experience Curator
-      const mustVisitConstraint = mustVisit
-        ? `IMPORTANT: The itinerary MUST include these places: ${mustVisit}. Schedule them on specific days and flag any logistical concerns.`
-        : "Create a balanced, AI-curated itinerary with the best experiences.";
-
-      const itineraryOutput = await callAgent(LOVABLE_API_KEY,
-        `You are a Local Experience Curator and Destination Expert for India. Design rich, day-by-day itineraries with cultural highlights, adventure activities, culinary recommendations, and backup plans. Tailor to ${travellerType} traveller on ${budgetTier} budget. Format in Markdown.`,
-        `Using logistics and budget context:\n${logisticsOutput}\n\n${budgetOutput}\n\nTrip details:\n${tripContext}\n\n${mustVisitConstraint}\n\nCreate:\n1. Day-by-day itinerary (Day 1, Day 2... Day N)\n2. Culinary guide with must-try dishes and recommended restaurants\n3. Adventure/activity guide with costs and safety tips\n4. 2+ contingency plans for weather or closures`
-      );
-
-      // Agent 4: Chief Travel Planner (Assembly)
+      // Agent 4: Optimization Agent (Assembly)
       const finalPlan = await callAgent(LOVABLE_API_KEY,
-        `You are the Chief Travel Planner. Synthesize all specialist outputs into one polished, cohesive trip plan document. Write a compelling intro (Trip Feasibility & Overview) and closing (Final Checklist & Responsible Tourism tips). Format as a professional, well-structured Markdown document with clear sections.`,
-        `Assemble these specialist reports into one final trip plan document:\n\n## LOGISTICS REPORT\n${logisticsOutput}\n\n## BUDGET REPORT\n${budgetOutput}\n\n## ITINERARY & EXPERIENCES\n${itineraryOutput}\n\nTrip details:\n${tripContext}\n\nCreate a final document with:\n1. Trip Feasibility & Overview (intro)\n2. Transportation & Accommodation Plan\n3. Budget Breakdown\n4. Day-by-Day Itinerary\n5. Food & Culinary Guide\n6. Activities & Adventure Guide\n7. Contingency Plans\n8. Final Checklist & Responsible Tourism Tips`
+        `You are the Travel Optimization Agent. Combine all specialist outputs into one clean, structured trip plan.
+${TABLE_FORMAT_RULES}
+CRITICAL: The final output must ONLY contain pipe-delimited tables with the mandatory columns. No markdown, no asterisks, no emojis, no bullet points. Start with a brief one-line trip summary, then tables only.`,
+        `Combine these reports into one final trip plan:\n\nDISCOVERY:\n${discoveryOutput}\n\nPLANNING:\n${planningOutput}\n\nBUDGET:\n${budgetOutput}\n\nTrip: ${tripContext}\n\nOutput format:\nLine 1: Trip summary (plain text, one line)\nThen tables with sections:\n1. Transportation Plan table\n2. Day-by-Day Itinerary table (one row per activity)\n3. Budget Breakdown table\n4. Emergency Contacts table\n\nAll tables must use columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info`
       );
 
-      // Update trip with completed plan
       await supabase.from("trips").update({
         plan_content: finalPlan,
         status: "completed",
