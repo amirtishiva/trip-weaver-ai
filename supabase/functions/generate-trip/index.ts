@@ -70,7 +70,7 @@ serve(async (req) => {
       });
     }
 
-    const { origin, destination, startDate, endDate, groupSize, travellerType, budgetTier, mustVisit } = await req.json();
+    const { origin, destination, startDate, endDate, groupSize, travellerType, budgetAmount, mustVisit } = await req.json();
 
     const { data: trip, error: tripError } = await supabase
       .from("trips")
@@ -80,23 +80,26 @@ serve(async (req) => {
         start_date: startDate, end_date: endDate,
         group_size: groupSize,
         traveller_type: travellerType,
-        budget_tier: budgetTier,
+        budget_tier: "custom", // Placeholder to avoid schema issues
         must_visit: mustVisit || "",
         status: "generating",
       })
       .select()
       .single();
 
-    if (tripError) throw new Error(`Failed to create trip: ${tripError.message}`);
+    if (tripError) {
+      console.error("Database insert error:", tripError);
+      throw new Error(`Database error: ${tripError.message}`);
+    }
 
-    const tripContext = `Origin: ${origin}\nDestination: ${destination}\nDates: ${startDate} to ${endDate}\nGroup Size: ${groupSize}\nTraveller Type: ${travellerType}\nBudget Tier: ${budgetTier}\nMust-Visit Places: ${mustVisit || "None specified"}`;
+    const tripContext = `Origin: ${origin}\nDestination: ${destination}\nDates: ${startDate} to ${endDate}\nGroup Size: ${groupSize}\nTraveller Type: ${travellerType}\nBudget: ₹${budgetAmount} per person\nMust-Visit Places: ${mustVisit || "None specified"}`;
 
     try {
       // Agent 1: Discovery Agent
       const discoveryOutput = await callAgent(LOVABLE_API_KEY,
         `You are a Travel Discovery Agent specializing in Indian domestic travel. Research transportation options (trains with numbers, buses, flights) and accommodation for the destination.
 ${TABLE_FORMAT_RULES}`,
-        `Research logistics for this trip:\n${tripContext}\n\nProvide a table with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info\n\nCover: Transport options from origin to destination, local transport at destination, recommended hotels for ${budgetTier} tier.`
+        `Research logistics for this trip:\n${tripContext}\n\nProvide a table with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info\n\nCover: Transport options from origin to destination, local transport at destination, recommended hotels within the ₹${budgetAmount} per person total budget.`
       );
 
       // Agent 2: Planning Agent
@@ -110,7 +113,7 @@ ${TABLE_FORMAT_RULES}`,
       const budgetOutput = await callAgent(LOVABLE_API_KEY,
         `You are a Travel Budgeting Agent. Create itemized budget breakdowns.
 ${TABLE_FORMAT_RULES}`,
-        `Using planning data:\n${planningOutput}\n\nTrip details:\n${tripContext}\n\nCreate budget tables with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info\n\nInclude rows for: Travel costs, Accommodation per night, Food per day, Activities, Miscellaneous. Show per-person costs for group of ${groupSize}.`
+        `Using planning data:\n${planningOutput}\n\nTrip details:\n${tripContext}\n\nCreate budget tables with columns: Day/Category | Time/Duration | Location/Place | Activity/Description | Estimated Cost (INR) | Recommended Hotels | Recommended Restaurants | Transport Details | Notes/Tips | Emergency Contact Info\n\nInclude rows for: Travel costs, Accommodation per night, Food per day, Activities, Miscellaneous. Ensure the TOTAL cost for the entire trip does not exceed ₹${budgetAmount} per person. Show per-person costs for group of ${groupSize}.`
       );
 
       // Agent 4: Optimization Agent (Assembly)

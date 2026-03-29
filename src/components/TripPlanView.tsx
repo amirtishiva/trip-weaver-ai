@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, ExternalLink, Train, Hotel, Utensils, Map } from "lucide-react";
 
 interface TripPlanViewProps {
   planContent: string;
@@ -194,6 +194,52 @@ const TripPlanView = ({ planContent, tripTitle }: TripPlanViewProps) => {
           ))}
         </div>
       )}
+
+      {/* External Links Section */}
+      <div className="mt-12 pt-8 border-t border-border">
+        <h3 className="font-heading text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+          <ExternalLink className="h-5 w-5 text-primary" /> Book Your Essentials
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Travel & Hotels */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Train className="h-4 w-4" /> Travel & Hotels
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="outline" size="sm" className="bg-card hover:bg-primary/10 border-primary/20" onClick={() => window.open("https://www.ixigo.com/", "_blank")}>
+                Ixigo
+              </Button>
+              <Button variant="outline" size="sm" className="bg-card hover:bg-primary/10 border-primary/20" onClick={() => window.open("https://www.makemytrip.com/", "_blank")}>
+                MakeMyTrip
+              </Button>
+              <Button variant="outline" size="sm" className="bg-card hover:bg-primary/10 border-primary/20" onClick={() => window.open("https://whereismytrain.org/", "_blank")}>
+                Where Is My Train
+              </Button>
+            </div>
+          </div>
+
+          {/* Restaurants & Food */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Utensils className="h-4 w-4" /> Nearby Restaurants
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="outline" size="sm" className="bg-card hover:bg-accent/10 border-accent/20" onClick={() => window.open("https://www.zomato.com/", "_blank")}>
+                Zomato
+              </Button>
+              <Button variant="outline" size="sm" className="bg-card hover:bg-accent/10 border-accent/20" onClick={() => window.open("https://www.swiggy.com/", "_blank")}>
+                Swiggy
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <p className="mt-6 text-[10px] text-muted-foreground italic text-center">
+          Note: Clicking these buttons will open external websites for booking and food delivery.
+        </p>
+      </div>
     </div>
   );
 };

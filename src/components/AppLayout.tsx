@@ -14,7 +14,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1 text-foreground" />
               <div className="font-heading font-bold text-sm bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-                Trip Weaver
+                Travel Wonders
               </div>
             </div>
           </header>

@@ -1,10 +1,10 @@
-# 🌍 Trip Weaver AI
+# 🌍 Travel Wonders
 
 > **Your Dream Trip, Architected by Intelligence in Under 2 Minutes.**
 
-![Trip Weaver AI Banner](/og-image.png)
+![Travel Wonders Banner](/og-image.png)
 
-Trip Weaver AI is a premium, AI-driven travel planning platform that leverages a sophisticated multi-agent pipeline to craft personalized, high-fidelity Indian travel itineraries. By orchestrating four specialized AI agents, the platform handles everything from destination discovery to granular budgeting and logistics.
+Travel Wonders is a premium, AI-driven travel planning platform that leverages a sophisticated multi-agent pipeline to craft personalized, high-fidelity Indian travel itineraries. By orchestrating four specialized AI agents, the platform handles everything from destination discovery to granular budgeting and logistics.
 
 ---
 

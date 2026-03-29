@@ -29,7 +29,7 @@ const PlanTrip = () => {
   const [endDate, setEndDate] = useState("");
   const [groupSize, setGroupSize] = useState("1");
   const [travellerType, setTravellerType] = useState("");
-  const [budgetTier, setBudgetTier] = useState("");
+  const [budgetAmount, setBudgetAmount] = useState("");
   const [mustVisit, setMustVisit] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +52,7 @@ const PlanTrip = () => {
         body: {
           origin, destination, startDate, endDate,
           groupSize: parseInt(groupSize),
-          travellerType, budgetTier,
+          travellerType, budgetAmount: parseFloat(budgetAmount),
           mustVisit: mustVisit || undefined,
         },
       });
@@ -130,14 +130,11 @@ const PlanTrip = () => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Budget Tier</Label>
-                    <Select required value={budgetTier} onValueChange={setBudgetTier}>
-                      <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="frugal">Frugal</SelectItem>
-                        <SelectItem value="comfort">Comfort</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Budget (₹ per person)</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
+                      <Input type="number" min={1000} step={500} placeholder="e.g. 10000" className="pl-7" required value={budgetAmount} onChange={(e) => setBudgetAmount(e.target.value)} />
+                    </div>
                   </div>
                 </div>
 
@@ -147,7 +144,7 @@ const PlanTrip = () => {
                   <p className="text-xs text-muted-foreground">Separate places with commas. The AI will build the itinerary around these.</p>
                 </div>
 
-                <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6" disabled={isGenerating || !travellerType || !budgetTier}>
+                <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6" disabled={isGenerating || !travellerType || !budgetAmount}>
                   {isGenerating ? (
                     <><Loader2 className="h-5 w-5 animate-spin mr-2" /> AI agents are working...</>
                   ) : (

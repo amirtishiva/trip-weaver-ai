@@ -22,7 +22,7 @@ const Navbar = () => {
     <nav className="fixed top-4 left-4 right-4 z-50 bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-lg shadow-black/5 rounded-2xl transition-all duration-300">
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
         <Link to="/" className="font-heading text-xl font-bold tracking-tight text-[#0a2540] dark:text-white hover:opacity-80 transition-opacity">
-          Trip Weaver AI
+          Travel Wonders
         </Link>
 
         {/* Center Links */}

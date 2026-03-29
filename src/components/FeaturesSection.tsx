@@ -48,7 +48,7 @@ const FeaturesSection = () => {
             Everything you need, one plan
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            No more juggling between apps. TravelMind AI handles logistics, budgeting, activities, and documentation — all at once.
+            No more juggling between apps. Travel Wonders handles logistics, budgeting, activities, and documentation — all at once.
           </p>
         </motion.div>
 

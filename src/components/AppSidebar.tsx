@@ -47,7 +47,7 @@ export function AppSidebar() {
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <span className="font-heading font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 group-data-[collapsible=icon]:hidden">
-            Trip Weaver
+              <span className="font-heading font-bold text-lg tracking-tight">Travel Wonders</span>
           </span>
         </Link>
       </SidebarHeader>

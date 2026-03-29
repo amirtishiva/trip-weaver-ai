@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, FileText, Plus, Loader2, Trash2, Download } from "lucide-react";
+import { Calendar, FileText, Plus, Loader2, Trash2, Download, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +30,9 @@ const Dashboard = () => {
   };
 
   const completedTrips = trips.filter((t) => t.status === "completed");
+  const failedTrips = trips.filter((t) => t.status === "failed").length;
+  const totalTravelers = trips.reduce((sum, t) => sum + (Number(t.group_size) || 1), 0);
+  const isGenerating = trips.some((t) => t.status === "generating");
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -49,12 +52,22 @@ const Dashboard = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
                 {[
                   { label: "Total Trips", value: String(trips.length), icon: Calendar },
-                  { label: "Plans Generated", value: String(completedTrips.length), icon: FileText },
-                  { label: "Generating", value: String(trips.filter((t) => t.status === "generating").length), icon: Loader2 },
+                  { label: "Plans Crafted", value: String(completedTrips.length), icon: FileText },
+                  { label: "Travelers Served", value: String(totalTravelers), icon: Users, color: "text-blue-500" },
                 ].map((stat, i) => (
                   <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                    className="bg-card border border-border rounded-xl p-5">
-                    <stat.icon className="h-5 w-5 text-primary mb-2" />
+                    className="bg-card border border-border rounded-xl p-5 relative overflow-hidden group hover:border-primary/50 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                       <stat.icon className={`h-5 w-5 ${i === 2 && isGenerating ? "text-primary animate-pulse" : "text-primary opacity-70 group-hover:opacity-100 transition-opacity"}`} />
+                       {i === 1 && failedTrips > 0 && (
+                         <span className="text-[10px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full font-medium">
+                           {failedTrips} failed
+                         </span>
+                       )}
+                       {i === 2 && isGenerating && (
+                         <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                       )}
+                    </div>
                     <p className="font-heading text-2xl font-bold text-foreground">{stat.value}</p>
                     <p className="text-sm text-muted-foreground">{stat.label}</p>
                   </motion.div>

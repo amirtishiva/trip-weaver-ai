@@ -62,7 +62,7 @@ const Auth = () => {
             <div className="gradient-primary rounded-lg p-1.5">
               <Compass className="h-5 w-5 text-primary-foreground" />
             </div>
-            TravelMind
+            Travel Wonders
             <span className="text-xs font-medium bg-accent/15 text-accent px-2 py-0.5 rounded-full">AI</span>
           </Link>
           <p className="text-muted-foreground mt-2">

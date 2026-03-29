@@ -12,7 +12,7 @@ type Message = {
 
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
-  content: "Hi! I'm your TravelMind AI assistant. Ask me anything about Indian travel destinations, trip planning tips, budgeting, or safety information!",
+  content: "Hi! I'm your Travel Wonders assistant. Ask me anything about Indian travel destinations, trip planning tips, budgeting, or safety information!",
 };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
@@ -206,7 +206,7 @@ const ChatbotWidget = () => {
               <div className="flex items-center gap-2">
                 <Bot className="h-5 w-5 text-primary-foreground" />
                 <div>
-                  <p className="text-sm font-semibold text-primary-foreground font-heading">TravelMind AI</p>
+                  <p className="text-sm font-semibold text-primary-foreground font-heading">Travel Wonders</p>
                   <p className="text-xs text-primary-foreground/70">Your travel assistant</p>
                 </div>
               </div>
