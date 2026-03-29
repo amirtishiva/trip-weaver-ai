@@ -6,15 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Loader2, MapPin, Calendar, Users, Wallet, FileText, CheckCircle } from "lucide-react";
+import { Sparkles, Loader2, MapPin, Calendar, Users, Wallet, CheckCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import ReactMarkdown from "react-markdown";
+import TripPlanView from "@/components/TripPlanView";
 
-const agentNames = ["Travel Logistics Analyst", "Budgeting Specialist", "Local Experience Curator", "Chief Travel Planner"];
+const agentNames = ["Discovery Agent", "Planning Agent", "Budgeting Agent", "Optimization Agent"];
 
 const PlanTrip = () => {
   const [searchParams] = useSearchParams();
@@ -40,7 +40,6 @@ const PlanTrip = () => {
     setPlanContent(null);
     setActiveAgent(0);
 
-    // Simulate agent progress
     const agentInterval = setInterval(() => {
       setActiveAgent((prev) => {
         if (prev >= 3) { clearInterval(agentInterval); return 3; }
@@ -167,8 +166,8 @@ const PlanTrip = () => {
                   Plan Another Trip
                 </Button>
               </div>
-              <div className="bg-card border border-border rounded-2xl p-6 md:p-8 prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown>{planContent}</ReactMarkdown>
+              <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+                <TripPlanView planContent={planContent} tripTitle={`${origin} to ${destination}`} />
               </div>
             </motion.div>
           )}
@@ -184,7 +183,7 @@ const PlanTrip = () => {
                       i === activeAgent ? "gradient-primary text-primary-foreground animate-pulse" :
                       "bg-muted text-muted-foreground"
                     }`}>
-                      {i < activeAgent ? "✓" : i + 1}
+                      {i < activeAgent ? "+" : i + 1}
                     </div>
                     <span className={`text-sm ${i <= activeAgent ? "text-foreground font-medium" : "text-muted-foreground"}`}>{agent}</span>
                     {i === activeAgent && <Loader2 className="h-4 w-4 animate-spin text-primary ml-auto" />}

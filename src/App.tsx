@@ -7,10 +7,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ChatbotWidget from "@/components/ChatbotWidget";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
-import Discover from "./pages/Discover";
-import DestinationDetail from "./pages/DestinationDetail";
 import PlanTrip from "./pages/PlanTrip";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -28,10 +27,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/discover" element={<Discover />} />
-            <Route path="/destination/:name" element={<DestinationDetail />} />
             <Route path="/plan" element={<ProtectedRoute><PlanTrip /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <ChatbotWidget />

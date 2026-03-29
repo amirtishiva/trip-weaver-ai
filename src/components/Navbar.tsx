@@ -14,10 +14,10 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
 
   const navItems = [
-    { label: "Discover", href: "/discover" },
     ...(user ? [
       { label: "Plan a Trip", href: "/plan" },
       { label: "Dashboard", href: "/dashboard" },
+      { label: "Profile", href: "/profile" },
     ] : []),
   ];
 

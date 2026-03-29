@@ -13,12 +13,11 @@ const Footer = () => {
             TravelMind AI
           </div>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/discover" className="hover:text-foreground transition-colors">Discover</Link>
             <Link to="/plan" className="hover:text-foreground transition-colors">Plan a Trip</Link>
             <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
           </div>
           <p className="text-xs text-muted-foreground">
-            © 2026 TravelMind AI. Built by The Centurions.
+            &copy; 2026 TravelMind AI. Built by The Centurions.
           </p>
         </div>
       </div>
