@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Message = {
   role: "user" | "assistant";
@@ -11,12 +12,13 @@ type Message = {
 
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
-  content: "Hi! 👋 I'm your TravelMind AI assistant. Ask me anything about Indian travel destinations, trip planning tips, budgeting, or safety information!",
+  content: "Hi! I'm your TravelMind AI assistant. Ask me anything about Indian travel destinations, trip planning tips, budgeting, or safety information!",
 };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const ChatbotWidget = () => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
@@ -28,6 +30,9 @@ const ChatbotWidget = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  // Don't render if user is not logged in
+  if (!user) return null;
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -104,6 +109,62 @@ const ChatbotWidget = () => {
     }
   };
 
+  // Simple table renderer for pipe-delimited tables in assistant messages
+  const renderContent = (content: string) => {
+    const lines = content.split("\n");
+    const result: React.ReactNode[] = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      // Detect table: line with pipes and next line is separator
+      if (lines[i].includes("|") && lines[i].trim().startsWith("|")) {
+        const tableLines: string[] = [];
+        while (i < lines.length && lines[i].includes("|") && lines[i].trim().startsWith("|")) {
+          tableLines.push(lines[i]);
+          i++;
+        }
+        if (tableLines.length >= 2) {
+          const parseRow = (line: string) =>
+            line.split("|").filter((_, idx, arr) => idx > 0 && idx < arr.length - 1).map(c => c.trim());
+
+          const headers = parseRow(tableLines[0]);
+          const isSeparator = (line: string) => /^\|[\s\-:|]+\|$/.test(line.trim());
+          const dataStart = isSeparator(tableLines[1]) ? 2 : 1;
+          const dataRows = tableLines.slice(dataStart).filter(l => !isSeparator(l)).map(parseRow);
+
+          result.push(
+            <div key={`table-${i}`} className="overflow-x-auto my-2">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr>
+                    {headers.map((h, hi) => (
+                      <th key={hi} className="border border-border bg-muted px-2 py-1 text-left font-semibold text-foreground">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataRows.map((row, ri) => (
+                    <tr key={ri}>
+                      {row.map((cell, ci) => (
+                        <td key={ci} className="border border-border px-2 py-1 text-muted-foreground">{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+          continue;
+        }
+      }
+
+      result.push(<span key={`line-${i}`}>{lines[i]}{i < lines.length - 1 ? <br /> : null}</span>);
+      i++;
+    }
+
+    return <>{result}</>;
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -150,7 +211,7 @@ const ChatbotWidget = () => {
                   <div className={`max-w-[75%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                     msg.role === "user" ? "bg-primary text-primary-foreground rounded-br-md" : "bg-secondary text-secondary-foreground rounded-bl-md"
                   }`}>
-                    {msg.content}
+                    {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
                   </div>
                   {msg.role === "user" && (
                     <div className="bg-accent rounded-full h-7 w-7 flex items-center justify-center shrink-0 mt-0.5">
