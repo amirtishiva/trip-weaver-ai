@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, FileText, Plus, Loader2, Trash2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import TripPlanView from "@/components/TripPlanView";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, profile } = useAuth();
@@ -33,9 +32,8 @@ const Dashboard = () => {
   const completedTrips = trips.filter((t) => t.status === "completed");
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-24 pb-16">
+    <div className="min-h-screen bg-transparent">
+      <div className="pt-8 pb-16">
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-2">
@@ -108,7 +106,7 @@ const Dashboard = () => {
           )}
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

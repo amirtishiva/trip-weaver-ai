@@ -1,61 +1,49 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Sparkles, Clock, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search } from "lucide-react";
 import heroImage from "@/assets/hero-travel.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[90vh] flex flex-col justify-end overflow-hidden pb-0 bg-background">
       <div className="absolute inset-0">
+        {/* Placeholder gradient for image fallback in case image isn't perfect, but we use the provided hero image. I'll add a subtle overlay to match original. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#e5dcd6] to-[#aee4f7] mix-blend-multiply opacity-30 z-0"></div>
         <img
           src={heroImage}
           alt="Breathtaking mountain valley with winding road"
-          className="w-full h-full object-cover"
-          width={1920}
-          height={1080}
+          className="w-full h-full object-cover object-bottom"
+          style={{ height: "100%", width: "100%" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent" />
+        {/* The mockup has a very distinct sky and water gradient. To ensure the text is readable, I'll add a slight top gradient. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-0" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-2xl">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <span className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium mb-6">
-              <Sparkles className="h-4 w-4" />
-              AI-Powered Trip Planning
-            </span>
-          </motion.div>
+      <div className="container mx-auto px-4 relative z-10 w-full mb-32 max-w-5xl">
+        <h1 className="font-heading text-5xl md:text-7xl lg:text-[5rem] font-bold text-foreground leading-[1.05] mb-6 tracking-tight">
+          Travel planning at <br />
+          the <span className="text-[#0a2540] italic font-serif opacity-90">speed</span> of <br />
+          thought.
+        </h1>
 
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight mb-6">
-            Plan your dream trip in{" "}
-            <span className="text-accent">2 minutes</span>
-          </motion.h1>
+        <p className="text-lg md:text-xl text-foreground/80 mb-10 max-w-xl font-medium leading-relaxed">
+          Our multi-agent AI engine orchestrates every detail of your
+          journey, from clandestine local gems to seamless logistics.
+        </p>
 
-          <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-lg">
-            Four AI agents work together to create your perfect trip plan — logistics, budget, itinerary, and more. Personalised for your travel style.
-          </motion.p>
-
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4">
-            <Link to="/plan">
-              <Button variant="accent" size="lg" className="text-base px-8 py-6">
-                <Sparkles className="h-5 w-5 mr-2" />
-                Start Planning
-              </Button>
-            </Link>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.5 }}
-            className="flex items-center gap-6 mt-10 text-primary-foreground/70 text-sm">
-            <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Under 3 min</span>
-            <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> All India</span>
-            <span className="flex items-center gap-1.5"><Sparkles className="h-4 w-4" /> 4 AI Agents</span>
-          </motion.div>
+        <div className="bg-white rounded-lg shadow-xl border border-border/50 p-1.5 flex flex-col sm:flex-row items-center w-full max-w-2xl gap-2 backdrop-blur-sm bg-white/95">
+          <div className="flex-1 flex items-center px-4 py-3 sm:py-0 w-full">
+            <Search className="h-5 w-5 text-muted-foreground mr-3" />
+            <input 
+              type="text" 
+              placeholder="Where do you dream of going?" 
+              className="w-full bg-transparent border-none outline-none text-foreground placeholder-muted-foreground font-medium text-base focus:ring-0" 
+            />
+          </div>
+          <button className="w-full sm:w-auto bg-[#0a2540] hover:bg-[#0a2540]/90 text-white font-semibold py-3 px-8 rounded-md transition-all whitespace-nowrap shadow-md">
+            Design my journey
+          </button>
         </div>
       </div>
+
     </section>
   );
 };

@@ -110,6 +110,16 @@ const ChatbotWidget = () => {
   };
 
   // Simple table renderer for pipe-delimited tables in assistant messages
+  const renderFormattedText = (text: string) => {
+    const parts = text.split(/\*\*(.*?)\*\*/g);
+    return parts.map((part, i) => {
+      if (i % 2 === 1) {
+        return <strong key={i} className="font-semibold">{part}</strong>;
+      }
+      return <span key={i}>{part.replace(/#/g, "").replace(/\*/g, "")}</span>;
+    });
+  };
+
   const renderContent = (content: string) => {
     const lines = content.split("\n");
     const result: React.ReactNode[] = [];
@@ -158,7 +168,12 @@ const ChatbotWidget = () => {
         }
       }
 
-      result.push(<span key={`line-${i}`}>{lines[i]}{i < lines.length - 1 ? <br /> : null}</span>);
+      result.push(
+        <span key={`line-${i}`}>
+          {renderFormattedText(lines[i])}
+          {i < lines.length - 1 ? <br /> : null}
+        </span>
+      );
       i++;
     }
 

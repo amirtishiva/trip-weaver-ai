@@ -1,25 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Compass, Sparkles, Moon, Sun, LogOut, User } from "lucide-react";
+import { Menu, X, LogOut, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/hooks/use-theme";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
-
-  const navItems = [
-    ...(user ? [
-      { label: "Plan a Trip", href: "/plan" },
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Profile", href: "/profile" },
-    ] : []),
-  ];
+  const { theme, toggleTheme } = useTheme();
 
   const handleSignOut = async () => {
     await signOut();
@@ -27,55 +19,47 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <Link to="/" className="flex items-center gap-2 font-heading text-xl font-bold text-foreground">
-          <div className="gradient-primary rounded-lg p-1.5">
-            <Compass className="h-5 w-5 text-primary-foreground" />
-          </div>
-          TravelMind
-          <span className="text-xs font-medium bg-accent/15 text-accent px-2 py-0.5 rounded-full">AI</span>
+    <nav className="fixed top-4 left-4 right-4 z-50 bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-lg shadow-black/5 rounded-2xl transition-all duration-300">
+      <div className="container mx-auto flex items-center justify-between h-16 px-6">
+        <Link to="/" className="font-heading text-xl font-bold tracking-tight text-[#0a2540] dark:text-white hover:opacity-80 transition-opacity">
+          Trip Weaver AI
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link key={item.href} to={item.href}>
-              <Button variant={location.pathname === item.href ? "secondary" : "ghost"} size="sm" className="font-medium">
-                {item.label}
-              </Button>
+        {/* Center Links */}
+        <div className="hidden md:flex items-center gap-8">
+          {!user ? (
+            <>
+              <a href="#agents" className="text-sm font-medium text-[#0a2540]/80 dark:text-white/80 hover:text-[#0a2540] dark:hover:text-white transition-colors">Agents</a>
+              <a href="#personas" className="text-sm font-medium text-[#0a2540]/80 dark:text-white/80 hover:text-[#0a2540] dark:hover:text-white transition-colors">Personas</a>
+            </>
+          ) : (
+            <Link to="/dashboard" className="text-sm font-bold text-primary dark:text-primary hover:text-primary/80 transition-colors">
+              Go to App Dashboard →
             </Link>
-          ))}
+          )}
         </div>
 
-        <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+        {/* Right Actions */}
+        <div className="hidden md:flex items-center gap-6">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-[#0a2540] dark:text-white rounded-full">
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </Button>
           {user ? (
-            <>
-              <Link to="/plan">
-                <Button variant="hero" size="sm" className="gap-1.5">
-                  <Sparkles className="h-4 w-4" /> Plan with AI
-                </Button>
-              </Link>
-              <Button variant="ghost" size="icon" onClick={handleSignOut} className="rounded-full" title="Sign out">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </>
+            <Button variant="ghost" onClick={handleSignOut} className="text-sm font-medium text-[#0a2540]/80 dark:text-white/80 hover:text-[#0a2540] dark:hover:text-white transition-colors px-0">
+              Sign out
+            </Button>
           ) : (
-            <Link to="/auth">
-              <Button variant="hero" size="sm" className="gap-1.5">
-                <User className="h-4 w-4" /> Sign In
-              </Button>
+            <Link to="/auth" className="text-sm font-medium text-[#0a2540]/80 dark:text-white/80 hover:text-[#0a2540] dark:hover:text-white transition-colors">
+              Sign in
             </Link>
           )}
         </div>
 
         <div className="flex items-center gap-1 md:hidden">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-[#0a2540] dark:text-white">
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)}>
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="text-[#0a2540] dark:text-white">
             {mobileOpen ? <X /> : <Menu />}
           </Button>
         </div>
@@ -87,31 +71,24 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl"
+            className="md:hidden border-t border-white/20"
           >
-            <div className="p-4 flex flex-col gap-2">
-              {navItems.map((item) => (
-                <Link key={item.href} to={item.href} onClick={() => setMobileOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">{item.label}</Button>
-                </Link>
-              ))}
-              {user ? (
+            <div className="p-4 flex flex-col gap-4">
+              {!user ? (
                 <>
-                  <Link to="/plan" onClick={() => setMobileOpen(false)}>
-                    <Button variant="hero" className="w-full gap-1.5 mt-2">
-                      <Sparkles className="h-4 w-4" /> Plan with AI
-                    </Button>
+                  <a href="#agents" className="text-sm font-medium text-[#0a2540] dark:text-white" onClick={() => setMobileOpen(false)}>Agents</a>
+                  <a href="#personas" className="text-sm font-medium text-[#0a2540] dark:text-white" onClick={() => setMobileOpen(false)}>Personas</a>
+                  <Link to="/auth" className="text-sm font-medium text-[#0a2540] dark:text-white" onClick={() => setMobileOpen(false)}>
+                    Sign in
                   </Link>
-                  <Button variant="ghost" className="w-full justify-start mt-1" onClick={() => { handleSignOut(); setMobileOpen(false); }}>
-                    <LogOut className="h-4 w-4 mr-2" /> Sign Out
-                  </Button>
                 </>
               ) : (
-                <Link to="/auth" onClick={() => setMobileOpen(false)}>
-                  <Button variant="hero" className="w-full gap-1.5 mt-2">
-                    <User className="h-4 w-4" /> Sign In
+                <>
+                  <Link to="/dashboard" className="text-sm font-bold text-primary" onClick={() => setMobileOpen(false)}>Go to App Dashboard →</Link>
+                  <Button variant="ghost" className="w-full justify-start px-0 text-red-500" onClick={() => { handleSignOut(); setMobileOpen(false); }}>
+                    Sign Out
                   </Button>
-                </Link>
+                </>
               )}
             </div>
           </motion.div>

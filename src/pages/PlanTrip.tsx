@@ -7,12 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Loader2, MapPin, Calendar, Users, Wallet, CheckCircle } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import TripPlanView from "@/components/TripPlanView";
+import { GlobePulse } from "@/components/ui/cobe-globe-pulse";
 
 const agentNames = ["Discovery Agent", "Planning Agent", "Budgeting Agent", "Optimization Agent"];
 
@@ -75,9 +75,8 @@ const PlanTrip = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-24 pb-16">
+    <div className="min-h-screen bg-transparent">
+      <div className="pt-8 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
             <div className="inline-flex items-center gap-2 gradient-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium mb-4">
@@ -88,73 +87,93 @@ const PlanTrip = () => {
           </motion.div>
 
           {!planContent ? (
-            <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6 shadow-sm max-w-2xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="origin" className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" /> Origin</Label>
-                  <Input id="origin" placeholder="e.g. Visakhapatnam" required value={origin} onChange={(e) => setOrigin(e.target.value)} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+              <motion.form initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+                onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="origin" className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" /> Origin</Label>
+                    <Input id="origin" placeholder="e.g. Visakhapatnam" required value={origin} onChange={(e) => setOrigin(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="destination" className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-accent" /> Destination</Label>
+                    <Input id="destination" placeholder="e.g. Manali" required value={destination} onChange={(e) => setDestination(e.target.value)} />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="destination" className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-accent" /> Destination</Label>
-                  <Input id="destination" placeholder="e.g. Manali" required value={destination} onChange={(e) => setDestination(e.target.value)} />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate" className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-primary" /> Start Date</Label>
-                  <Input id="startDate" type="date" required value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="startDate" className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-primary" /> Start Date</Label>
+                    <Input id="startDate" type="date" required value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="endDate" className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-primary" /> End Date</Label>
+                    <Input id="endDate" type="date" required value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endDate" className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-primary" /> End Date</Label>
-                  <Input id="endDate" type="date" required value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> Group Size</Label>
-                  <Input type="number" min={1} max={20} placeholder="1" required value={groupSize} onChange={(e) => setGroupSize(e.target.value)} />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> Group Size</Label>
+                    <Input type="number" min={1} max={20} placeholder="1" required value={groupSize} onChange={(e) => setGroupSize(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> Traveller Type</Label>
+                    <Select required value={travellerType} onValueChange={setTravellerType}>
+                      <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="family">Family</SelectItem>
+                        <SelectItem value="solo">Solo</SelectItem>
+                        <SelectItem value="professional">Professional</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Budget Tier</Label>
+                    <Select required value={budgetTier} onValueChange={setBudgetTier}>
+                      <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="frugal">Frugal</SelectItem>
+                        <SelectItem value="comfort">Comfort</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> Traveller Type</Label>
-                  <Select required value={travellerType} onValueChange={setTravellerType}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="family">Family</SelectItem>
-                      <SelectItem value="solo">Solo</SelectItem>
-                      <SelectItem value="professional">Professional</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Budget Tier</Label>
-                  <Select required value={budgetTier} onValueChange={setBudgetTier}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="frugal">Frugal</SelectItem>
-                      <SelectItem value="comfort">Comfort</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="mustVisit">Must-Visit Places (optional)</Label>
-                <Textarea id="mustVisit" placeholder="e.g. Rohtang Pass, Solang Valley, Old Manali..." className="resize-none" rows={3} value={mustVisit} onChange={(e) => setMustVisit(e.target.value)} />
-                <p className="text-xs text-muted-foreground">Separate places with commas. The AI will build the itinerary around these.</p>
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mustVisit">Must-Visit Places (optional)</Label>
+                  <Textarea id="mustVisit" placeholder="e.g. Rohtang Pass, Solang Valley, Old Manali..." className="resize-none" rows={3} value={mustVisit} onChange={(e) => setMustVisit(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Separate places with commas. The AI will build the itinerary around these.</p>
+                </div>
 
-              <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6" disabled={isGenerating || !travellerType || !budgetTier}>
-                {isGenerating ? (
-                  <><Loader2 className="h-5 w-5 animate-spin mr-2" /> AI agents are working...</>
-                ) : (
-                  <><Sparkles className="h-5 w-5 mr-2" /> Generate My Trip Plan</>
-                )}
-              </Button>
-            </motion.form>
+                <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6" disabled={isGenerating || !travellerType || !budgetTier}>
+                  {isGenerating ? (
+                    <><Loader2 className="h-5 w-5 animate-spin mr-2" /> AI agents are working...</>
+                  ) : (
+                    <><Sparkles className="h-5 w-5 mr-2" /> Generate My Trip Plan</>
+                  )}
+                </Button>
+              </motion.form>
+
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                transition={{ delay: 0.2 }}
+                className="flex flex-col items-center justify-center space-y-6 lg:mt-8"
+              >
+                <div className="relative w-full aspect-square max-w-[450px]">
+                  <GlobePulse className="w-full" />
+                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4/5 h-4 bg-primary/20 blur-2xl rounded-full" />
+                </div>
+                <div className="text-center space-y-2 max-w-sm">
+                  <h3 className="font-heading text-xl font-bold">Visualize Your Journey</h3>
+                  <p className="text-sm text-muted-foreground">
+                    From your doorstep to the world's most breathtaking destinations. Our AI agents handle the complexity so you can enjoy the view.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
           ) : (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center justify-between mb-6">
@@ -194,7 +213,7 @@ const PlanTrip = () => {
           )}
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

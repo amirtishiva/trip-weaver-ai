@@ -144,4 +144,36 @@
   .text-subtle {
     color: hsl(var(--text-subtle));
   }
+
+  /* Custom animations for the orbital timeline */
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bg-gradient-orbital {
+    background: linear-gradient(to bottom right, #6366f1, #3b82f6, #14b8a6);
+  }
+
+  .shadow-orbital {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Animation for the pulsing effect */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Animation for the ping effect */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }

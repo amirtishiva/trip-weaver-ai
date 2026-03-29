@@ -53,8 +53,8 @@ const parsePlanToTables = (content: string): { title: string; tables: { sectionT
     }
 
     // Collect non-table content
-    if (line.length > 0 && !line.match(/^[-*]+$/) && !line.startsWith("---")) {
-      const cleanLine = line.replace(/^\*+|\*+$/g, "").replace(/^#+\s*/, "").trim();
+    if (line.length > 0 && !line.match(/^[-]+$/) && !line.startsWith("---")) {
+      const cleanLine = line.replace(/#/g, "").trim();
       if (cleanLine) {
         const existing = rawSections.find(s => s.title === (currentSection || "Overview"));
         if (existing) {
@@ -112,7 +112,7 @@ p { margin: 4px 0; line-height: 1.5; }
 
   // If no tables were found, render all content as-is
   if (parsed.tables.length === 0 && parsed.rawSections.length === 0) {
-    const cleanContent = planContent.replace(/\*+/g, "").replace(/#{1,3}\s*/g, "");
+    const cleanContent = planContent.replace(/#/g, "");
     cleanContent.split("\n").forEach(line => {
       if (line.trim()) html += `<p>${line.trim()}</p>`;
     });
@@ -126,6 +126,16 @@ p { margin: 4px 0; line-height: 1.5; }
     printWindow.document.close();
     setTimeout(() => printWindow.print(), 500);
   }
+};
+
+const renderFormattedText = (text: string) => {
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return parts.map((part, i) => {
+    if (i % 2 === 1) {
+      return <strong key={i} className="font-semibold text-foreground">{part}</strong>;
+    }
+    return <span key={i}>{part.replace(/\*/g, "")}</span>;
+  });
 };
 
 const TripPlanView = ({ planContent, tripTitle }: TripPlanViewProps) => {
@@ -144,7 +154,7 @@ const TripPlanView = ({ planContent, tripTitle }: TripPlanViewProps) => {
         <div key={`section-${i}`} className="mb-4">
           <h3 className="font-heading text-sm font-semibold text-foreground mb-2">{section.title}</h3>
           {section.content.split("\n").map((line, li) => (
-            line.trim() ? <p key={li} className="text-sm text-muted-foreground leading-relaxed">{line.trim()}</p> : null
+            line.trim() ? <p key={li} className="text-sm text-muted-foreground leading-relaxed">{renderFormattedText(line.trim())}</p> : null
           ))}
         </div>
       ))}
@@ -178,8 +188,10 @@ const TripPlanView = ({ planContent, tripTitle }: TripPlanViewProps) => {
 
       {/* Fallback: render plain text if no tables found */}
       {parsed.tables.length === 0 && parsed.rawSections.length === 0 && (
-        <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-          {planContent.replace(/\*+/g, "").replace(/#{1,3}\s*/g, "")}
+        <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+          {planContent.replace(/#/g, "").split("\n").map((line, i) => (
+             <div key={i}>{renderFormattedText(line)}</div>
+          ))}
         </div>
       )}
     </div>
